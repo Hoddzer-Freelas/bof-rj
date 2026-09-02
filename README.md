@@ -1,40 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# BOF-RJ — Brigada de Operações Florestais do Rio de Janeiro
 
-## Getting Started
+Site estático da Brigada de Operações Florestais do Rio de Janeiro, construído com **Next.js** (Pages Router), **TypeScript**, **Tailwind CSS** e deploy automático no **GitHub Pages**.
 
-First, run the development server:
+## Stack
+
+- [Next.js 16](https://nextjs.org) — Pages Router, exportação estática
+- [TypeScript](https://www.typescriptlang.org)
+- [Tailwind CSS v4](https://tailwindcss.com)
+- [Vitest](https://vitest.dev) + [React Testing Library](https://testing-library.com) — testes unitários
+- [Prettier](https://prettier.io) — formatação
+- [Husky](https://typicode.github.io/husky) + [lint-staged](https://github.com/lint-staged/lint-staged) — hooks de pré-commit
+
+## Começando
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+| Comando                 | Descrição                                 |
+| ----------------------- | ----------------------------------------- |
+| `npm run dev`           | Servidor de desenvolvimento               |
+| `npm run build`         | Build de produção (gera a pasta `out/`)   |
+| `npm run start`         | Executa o build de produção               |
+| `npm run lint`          | Verifica o código com ESLint              |
+| `npm run lint:fix`      | Corrige automaticamente o ESLint          |
+| `npm run typecheck`     | Verifica os tipos com TypeScript          |
+| `npm run format`        | Formata o código com Prettier             |
+| `npm run format:check`  | Verifica a formatação                     |
+| `npm run test`          | Roda os testes unitários                  |
+| `npm run test:watch`    | Roda os testes em modo watch              |
+| `npm run test:coverage` | Roda os testes com relatório de cobertura |
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+Ao commitar, o hook de pré-commit (Husky + lint-staged) roda ESLint e Prettier automaticamente nos arquivos alterados.
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estrutura
 
-## Learn More
+```
+├── src/
+│   ├── components/   # Componentes reutilizáveis (testes junto ao arquivo)
+│   ├── pages/        # Rotas do site
+│   │   ├── _app.tsx      # Setup global (fontes, layout)
+│   │   ├── _document.tsx # Documento HTML
+│   │   └── ...
+│   └── styles/       # Estilos globais / tema Tailwind
+├── public/           # Assets estáticos
+├── docs/             # Documentação de padrões do projeto
+└── .github/workflows/  # CI/CD (GitHub Pages)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+O deploy é feito automaticamente pelo **GitHub Actions** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) a cada push na branch `main`, publicando a pasta `out/` no GitHub Pages.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Passos para ativar:
 
-## Deploy on Vercel
+1. Faça push das alterações para `main`.
+2. No GitHub: **Settings → Pages → Source: GitHub Actions**.
+3. O site ficará disponível em `https://Hoddzer-Freelas.github.io/bof-rj/`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Documentação
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+- [Testes](docs/TESTING.md) — convenções e como escrever testes

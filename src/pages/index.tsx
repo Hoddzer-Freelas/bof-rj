@@ -5,7 +5,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>BOF-RJ | Brigada de Operações Florestais do Rio de Janeiro</title>
+        <title>
+          BOF-RJ | Brigada de Operações Florestais do Rio de Janeiro
+        </title>
         <meta
           name="description"
           content="Brigada de Operações Florestais do estado do Rio de Janeiro. Prevenção e combate a incêndios florestais, proteção da Mata Atlântica e resposta a emergências."
@@ -22,8 +24,8 @@ export default function Home() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-forest-100">
             Atuamos na prevenção e no combate a incêndios florestais, na
-            conservação da Mata Atlântica e na resposta a emergências
-            ambientais em todo o estado.
+            conservação da Mata Atlântica e na resposta a emergências ambientais
+            em todo o estado.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link

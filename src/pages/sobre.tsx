@@ -15,9 +15,9 @@ export default function Sobre() {
             florestais no estado do Rio de Janeiro.
           </p>
           <p>
-            Nossa missão é preservar a Mata Atlântica, proteger a
-            biodiversidade e garantir a segurança das comunidades frente às
-            emergências ambientais.
+            Nossa missão é preservar a Mata Atlântica, proteger a biodiversidade
+            e garantir a segurança das comunidades frente às emergências
+            ambientais.
           </p>
         </div>
       </section>
