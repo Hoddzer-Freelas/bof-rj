@@ -20,15 +20,19 @@ Sempre rode estes comandos após concluir tarefas de código:
 Build de produção: `npm run build` (gera exportação estática em `out/`).
 
 ## Stack
-- Next.js 16 (Pages Router) com exportação estática para GitHub Pages — `next.config.ts` já define `output: "export"`, `basePath` e `assetPrefix` para `/bof-rj`.
-- Código da aplicação em `src/` (`src/pages`, `src/components`, `src/styles`), com alias `@/` apontando para `./src/*`.
+- Next.js 16 (App Router) com exportação estática para GitHub Pages — `next.config.ts` já define `output: "export"`, `basePath` e `assetPrefix` para `/bof-rj`.
+- Código da aplicação em `src/` (`src/app`, `src/components`, `src/content`, `src/styles`, `src/tests`), com alias `@/` apontando para `./src/*`.
 - TypeScript estrito.
 - Tailwind CSS v4 com tema customizado (`forest-*`, `emergency-*`) em `src/styles/globals.css`.
-- Testes: Vitest + React Testing Library, colocados junto ao componente. Ver `docs/TESTING.md`.
+- Conteúdo documental em Markdown em `src/content/docs/**/*.md` (frontmatter + gravidade), renderizado por `gray-matter` + `marked`.
+- Testes: Vitest + React Testing Library, centralizados em `src/tests/` espelhando `src/`. Ver `docs/TESTING.md`.
 - Formatação: Prettier.
 
 ## Regras
-- Não criar rotas de API (`pages/api`) — não suportadas na exportação estática.
-- Não usar `getServerSideProps` nem ISR — incompatíveis com `output: "export"`.
-- Testes unitários colocalizados: `<Nome>.test.tsx`.
+- Arquivos em **kebab-case** (`footer.tsx`, `o-que-e.md`), exceto convenções do framework (`layout.tsx`, `page.tsx`, `_app.tsx`).
+- Não criar rotas de API (`app/api`) — não suportadas na exportação estática.
+- Não usar rendering dinâmico (`headers`, `cookies`), `getServerSideProps` nem ISR — incompatíveis com `output: "export"`.
+- Testes centralizados em `src/tests/<pasta-correspondente>/<nome>.test.ts(x)`.
+- Usar route groups `()` para organizar seções com layouts próprios (ex.: `(system)`, `(docs)`).
+
 

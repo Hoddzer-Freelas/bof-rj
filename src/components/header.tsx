@@ -2,10 +2,7 @@ import Link from "next/link";
 
 const navItems = [
   { label: "Início", href: "/" },
-  { label: "Sobre", href: "/sobre" },
-  { label: "Operações", href: "/operacoes" },
-  { label: "Imprensa", href: "/imprensa" },
-  { label: "Contato", href: "/contato" },
+  { label: "Documentação", href: "/docs" },
 ];
 
 export default function Header() {

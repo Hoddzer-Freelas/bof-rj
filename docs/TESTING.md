@@ -2,12 +2,25 @@
 
 ## Estrutura
 
-- Testes de componentes são **colocados junto ao componente** (`Footer.test.tsx` ao lado de `Footer.tsx`).
-- Para páginas, testes ficam na pasta `__tests__/` na raiz.
+Todos os testes unitários ficam **centralizados** em `src/tests/`, espelhando a estrutura de pastas do projeto:
+
+```
+src/tests/
+├── components/
+│   └── footer.test.tsx      # testa src/components/footer.tsx
+├── content/
+│   └── docs/
+│       └── index.test.ts    # testa src/content/docs/index.ts
+└── ...
+```
+
+Para cada pasta de código em `src/`, existe uma pasta correspondente em `src/tests/` que contém os arquivos `*.test.ts(x)`.
 
 ## Framework
 
 Usamos **Vitest** + **React Testing Library** + **@testing-library/jest-dom** com ambiente `jsdom`.
+
+O Vitest está configurado para descobrir apenas os arquivos em `src/tests/**/*.test.{ts,tsx}` (ver `vitest.config.mts`).
 
 ## Scripts
 
@@ -25,7 +38,7 @@ Sempre prefira consultar **pela semântica** (roles, texto, labels) em vez de te
 
 ```tsx
 import { render, screen } from "@testing-library/react";
-import Footer from "./Footer";
+import Footer from "@/components/footer";
 
 describe("Footer", () => {
   it("exibe o nome da brigada", () => {
@@ -39,7 +52,7 @@ describe("Footer", () => {
 
 ## Convenções
 
-- Nome do arquivo: `<Nome>.test.tsx`.
+- Arquivo: `<nome>.test.ts(x)` em **kebab-case**, dentro da pasta espelhada em `src/tests/`.
 - Um `describe` por componente/módulo.
 - Testar o **comportamento**, não a implementação.
 - Mockar chamadas externas (fetch, API) e limites de módulo do Next.js quando necessário.

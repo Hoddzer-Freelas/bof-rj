@@ -1,19 +1,8 @@
 import Link from "next/link";
-import Head from "next/head";
 
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>
-          BOF-RJ | Brigada de Operações Florestais do Rio de Janeiro
-        </title>
-        <meta
-          name="description"
-          content="Brigada de Operações Florestais do estado do Rio de Janeiro. Prevenção e combate a incêndios florestais, proteção da Mata Atlântica e resposta a emergências."
-        />
-      </Head>
-
       <section className="bg-forest-800 text-white">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
           <p className="mb-4 inline-block rounded-full bg-forest-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
@@ -29,13 +18,13 @@ export default function Home() {
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
-              href="/operacoes"
+              href="/docs"
               className="rounded-lg bg-forest-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-forest-400"
             >
-              Nossas Operações
+              Nossa Documentação
             </Link>
             <Link
-              href="/contato"
+              href="/contact"
               className="rounded-lg border border-white/30 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/10"
             >
               Reportar Emergência
@@ -48,7 +37,7 @@ export default function Home() {
         <div className="grid gap-8 sm:grid-cols-3">
           <div className="rounded-xl border border-forest-100 bg-white p-6 shadow-sm">
             <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-forest-100 text-2xl">
-              🚒
+              {"\u{1F692}"}
             </div>
             <h2 className="text-lg font-bold text-forest-900">
               Combate a Incêndios
@@ -61,7 +50,7 @@ export default function Home() {
 
           <div className="rounded-xl border border-forest-100 bg-white p-6 shadow-sm">
             <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-forest-100 text-2xl">
-              🌳
+              {"\u{1F333}"}
             </div>
             <h2 className="text-lg font-bold text-forest-900">
               Proteção da Mata Atlântica
@@ -74,7 +63,7 @@ export default function Home() {
 
           <div className="rounded-xl border border-forest-100 bg-white p-6 shadow-sm">
             <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-forest-100 text-2xl">
-              🛟
+              {"\u{1F6DF}"}
             </div>
             <h2 className="text-lg font-bold text-forest-900">
               Emergências Ambientais

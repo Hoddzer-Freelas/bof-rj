@@ -1,13 +1,14 @@
 # BOF-RJ — Brigada de Operações Florestais do Rio de Janeiro
 
-Site estático da Brigada de Operações Florestais do Rio de Janeiro, construído com **Next.js** (Pages Router), **TypeScript**, **Tailwind CSS** e deploy automático no **GitHub Pages**.
+Site estático da Brigada de Operações Florestais do Rio de Janeiro, construído com **Next.js** (App Router), **TypeScript**, **Tailwind CSS** e deploy automático no **GitHub Pages**.
 
 ## Stack
 
-- [Next.js 16](https://nextjs.org) — Pages Router, exportação estática
+- [Next.js 16](https://nextjs.org) — App Router, exportação estática
 - [TypeScript](https://www.typescriptlang.org)
 - [Tailwind CSS v4](https://tailwindcss.com)
 - [Vitest](https://vitest.dev) + [React Testing Library](https://testing-library.com) — testes unitários
+- [gray-matter](https://www.npmjs.com/package/gray-matter) + [marked](https://marked.js.org) — conteúdo em Markdown
 - [Prettier](https://prettier.io) — formatação
 - [Husky](https://typicode.github.io/husky) + [lint-staged](https://github.com/lint-staged/lint-staged) — hooks de pré-commit
 
@@ -42,16 +43,23 @@ Ao commitar, o hook de pré-commit (Husky + lint-staged) roda ESLint e Prettier 
 
 ```
 ├── src/
-│   ├── components/   # Componentes reutilizáveis (testes junto ao arquivo)
-│   ├── pages/        # Rotas do site
-│   │   ├── _app.tsx      # Setup global (fontes, layout)
-│   │   ├── _document.tsx # Documento HTML
-│   │   └── ...
-│   └── styles/       # Estilos globais / tema Tailwind
-├── public/           # Assets estáticos
-├── docs/             # Documentação de padrões do projeto
-└── .github/workflows/  # CI/CD (GitHub Pages)
+│   ├── app/             # Rotas (App Router)
+│   │   ├── (system)/    # Grupo system: home, contato
+│   │   └── (docs)/      # Grupo docs: documentação (/docs)
+│   ├── components/      # Componentes reutilizáveis (kebab-case)
+│   ├── content/docs/    # Conteúdo em Markdown (.md com frontmatter)
+│   ├── styles/          # Estilos globais / tema Tailwind
+│   └── tests/           # Testes unitários centralizados (espelha src/)
+├── public/              # Assets estáticos
+├── docs/                # Documentação de padrões do projeto
+└── .github/workflows/   # CI/CD (GitHub Pages)
 ```
+
+## Convenções
+
+- **Arquivos em kebab-case** (`footer.tsx`, `page.tsx`, `o-que-e.md`), exceto convenções do framework (`layout.tsx`, `page.tsx`, `_app.tsx`).
+- **Testes centralizados** em `src/tests/` espelhando a estrutura de `src/`. Ver [docs/TESTING.md](docs/TESTING.md).
+- **Conteúdo documental** em Markdown com frontmatter (`src/content/docs/**/*.md`), renderizado via `gray-matter` + `marked`.
 
 ## Deploy
 
