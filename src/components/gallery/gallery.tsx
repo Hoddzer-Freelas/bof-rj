@@ -88,30 +88,40 @@ export default function Gallery() {
   const albums = useMemo(() => groupByTitle(visibleItems), [visibleItems]);
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      <p className="text-sm font-semibold uppercase tracking-wide text-forest-600">
-        Galeria
-      </p>
-      <h1 className="mt-2 text-2xl font-bold text-forest-900 sm:text-3xl">
-        Nossos trabalhos
-      </h1>
-      <p className="mt-3 max-w-2xl text-forest-700">
-        Cursos, eventos, resgates e ações de proteção ambiental realizadas pela
-        brigada.
-      </p>
+    <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+      <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-forest-500">
+            Galeria
+          </p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-forest-900 sm:text-4xl">
+            Nossos trabalhos
+          </h1>
+          <p className="mt-3 max-w-xl text-forest-600">
+            Cursos, eventos, resgates e ações de proteção ambiental realizadas
+            pela brigada.
+          </p>
+        </div>
+        {albums.length > 0 && (
+          <span className="rounded-full border border-forest-100 bg-white px-4 py-1.5 text-sm font-medium text-forest-700 shadow-sm">
+            {items.length} {items.length === 1 ? "foto" : "fotos"} em{" "}
+            {albums.length} {albums.length === 1 ? "galeria" : "galerias"}
+          </span>
+        )}
+      </div>
 
       <div
-        className="mt-6 flex flex-wrap gap-2"
+        className="mt-8 flex flex-wrap gap-2"
         role="tablist"
         aria-label="Filtrar por categoria"
       >
         <button
           type="button"
           onClick={() => setFilter("todas")}
-          className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+          className={`rounded-full px-4 py-2 text-sm font-medium shadow-sm transition-all ${
             filter === "todas"
-              ? "bg-forest-700 text-white"
-              : "bg-forest-100 text-forest-800 hover:bg-forest-200"
+              ? "bg-forest-700 text-white shadow-forest-700/20"
+              : "border border-forest-100 bg-white text-forest-700 hover:bg-forest-50"
           }`}
         >
           Todas
@@ -121,16 +131,18 @@ export default function Gallery() {
             key={value}
             type="button"
             onClick={() => setFilter(value as GalleryCategory)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-medium shadow-sm transition-all ${
               filter === value
-                ? "bg-forest-700 text-white"
-                : "bg-forest-100 text-forest-800 hover:bg-forest-200"
+                ? "bg-forest-700 text-white shadow-forest-700/20"
+                : "border border-forest-100 bg-white text-forest-700 hover:bg-forest-50"
             }`}
           >
             {c.label}
           </button>
         ))}
       </div>
+
+      <div className="mt-10 h-px w-full bg-gradient-to-r from-forest-100 via-forest-200/60 to-transparent" />
 
       {error && (
         <p className="mt-8 rounded-lg border border-emergency-200 bg-emergency-50 p-4 text-sm text-emergency-700">
@@ -147,43 +159,67 @@ export default function Gallery() {
       )}
 
       {!loading && albums.length > 0 && (
-        <div className="mt-10 space-y-12">
+        <div className="mt-10 space-y-14">
           {albums.map((album) => (
-            <section key={album.title} aria-label={album.title}>
-              <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-xl font-bold text-forest-900">
+            <section
+              key={album.title}
+              aria-label={album.title}
+              className="overflow-hidden rounded-2xl border border-forest-100 bg-white shadow-sm"
+            >
+              <div className="flex flex-col gap-3 border-b border-forest-100 bg-gradient-to-br from-forest-50/60 to-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <h2 className="text-lg font-bold text-forest-900 sm:text-xl">
                   {album.title}
                 </h2>
-                <div className="flex items-center gap-3 text-xs text-forest-600">
-                  <span>{CATEGORIES[album.category].label}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-forest-600/10 px-3 py-1 text-xs font-semibold text-forest-700">
+                    {CATEGORIES[album.category].label}
+                  </span>
+                  <span className="rounded-full bg-forest-100 px-3 py-1 text-xs font-medium text-forest-600">
                     {album.items.length}{" "}
                     {album.items.length === 1 ? "foto" : "fotos"}
                   </span>
                 </div>
               </div>
-              <PhotoAlbum
-                layout="masonry"
-                columns={(containerWidth) => {
-                  if (containerWidth < 560) return 2;
-                  if (containerWidth < 900) return 3;
-                  return 4;
-                }}
-                spacing={12}
-                photos={album.items.map((item) => ({
-                  src: itemImageUrl(item),
-                  width: 4,
-                  height: 3,
-                  key: item.id,
-                }))}
-                onClick={({ index: photoIdx }) => {
-                  const slides = album.items.map((i) => itemImageUrl(i));
-                  setLightboxSlides(slides);
-                  setPhotoIndex(photoIdx);
-                  setOpen(true);
-                }}
-              />
+              <div className="p-4 sm:p-6">
+                <PhotoAlbum
+                  layout="masonry"
+                  columns={(containerWidth) => {
+                    if (containerWidth < 560) return 2;
+                    if (containerWidth < 900) return 3;
+                    return 4;
+                  }}
+                  spacing={12}
+                  photos={album.items.slice(0, 4).map((item) => ({
+                    src: itemImageUrl(item),
+                    width: 4,
+                    height: 3,
+                    key: item.id,
+                  }))}
+                  onClick={({ index: photoIdx }) => {
+                    const slides = album.items.map((i) => itemImageUrl(i));
+                    setLightboxSlides(slides);
+                    setPhotoIndex(photoIdx);
+                    setOpen(true);
+                  }}
+                />
+                {album.items.length > 4 && (
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const slides = album.items.map((i) => itemImageUrl(i));
+                        setLightboxSlides(slides);
+                        setPhotoIndex(0);
+                        setOpen(true);
+                      }}
+                      className="inline-flex items-center gap-2 rounded-full border border-forest-200 bg-white px-5 py-2 text-sm font-medium text-forest-700 shadow-sm transition-all hover:border-forest-300 hover:bg-forest-50"
+                    >
+                      Ver todas as {album.items.length} fotos
+                      <span aria-hidden="true">→</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </section>
           ))}
         </div>
@@ -194,6 +230,7 @@ export default function Gallery() {
         close={() => setOpen(false)}
         index={photoIndex}
         slides={lightboxSlides.map((src) => ({ src }))}
+        styles={{ container: { backgroundColor: "rgba(0,0,0,0.9)" } }}
       />
     </section>
   );

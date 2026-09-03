@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { deleteItem, fetchGallery, updateItem, uploadImage } from "@/lib/api";
 import {
   CATEGORIES,
@@ -9,6 +9,7 @@ import {
 } from "@/lib/gallery";
 import { clearSessionToken, getSessionToken } from "@/lib/admin-session";
 import { itemImageUrl } from "@/lib/gallery";
+import { optimizeImage } from "@/lib/optimize-image";
 
 export default function AdminApp({
   onLogout,
@@ -38,7 +39,21 @@ export default function AdminApp({
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const token = initialToken || getSessionToken();
+
+  function handleAuthError(err: unknown): boolean {
+    if (
+      err instanceof Error &&
+      (err as Error & { status?: number }).status === 401
+    ) {
+      clearSessionToken();
+      onLogout();
+      return true;
+    }
+    return false;
+  }
 
   const load = useCallback(async () => {
     try {
@@ -63,10 +78,15 @@ export default function AdminApp({
     e.preventDefault();
     if (!token || files.length === 0) return;
     setUploading(true);
-    setUploadMessage(null);
+    setUploadMessage("Otimizando e enviando imagens...");
     try {
       for (const file of files) {
-        await uploadImage(token, file, { title, description, category });
+        const optimized = await optimizeImage(file);
+        await uploadImage(token, optimized.file, {
+          title,
+          description,
+          category,
+        });
       }
       setFiles([]);
       setTitle("");
@@ -74,8 +94,13 @@ export default function AdminApp({
       setUploadMessage(`${files.length} imagem(ns) enviada(s) com sucesso.`);
       await load();
     } catch (err) {
-      setUploadMessage(err instanceof Error ? err.message : "Falha no upload.");
+      if (!handleAuthError(err)) {
+        setUploadMessage(
+          err instanceof Error ? err.message : "Falha no upload."
+        );
+      }
     } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
       setUploading(false);
     }
   }
@@ -87,7 +112,9 @@ export default function AdminApp({
       await deleteItem(token, id);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao excluir.");
+      if (!handleAuthError(err)) {
+        setError(err instanceof Error ? err.message : "Falha ao excluir.");
+      }
     }
   }
 
@@ -120,7 +147,9 @@ export default function AdminApp({
       setEditSaving(false);
       setEditing(null);
     } catch (err) {
-      setEditMessage(err instanceof Error ? err.message : "Falha ao salvar.");
+      if (!handleAuthError(err)) {
+        setEditMessage(err instanceof Error ? err.message : "Falha ao salvar.");
+      }
       setEditSaving(false);
     }
   }
@@ -216,18 +245,27 @@ export default function AdminApp({
 
         <label className="mt-4 block text-sm font-medium text-forest-900">
           Arquivos
+          <span className="ml-2 text-xs font-normal text-forest-600">
+            (máx. 10MB por imagem)
+          </span>
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/*"
             multiple
-            onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
+            onChange={(e) => {
+              const selected = Array.from(e.target.files ?? []);
+              setFiles(selected);
+              if (selected.length === 0) e.target.value = "";
+            }}
             className="mt-1 block w-full text-sm text-forest-700 file:mr-3 file:rounded-lg file:border-0 file:bg-forest-100 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-forest-800 hover:file:bg-forest-200"
           />
         </label>
 
         {files.length > 0 && (
           <p className="mt-2 text-xs text-forest-700">
-            {files.length} arquivo(s) selecionado(s) — até 10MB cada.
+            {files.length} arquivo(s) selecionado(s) — serão otimizados
+            automaticamente (redimensionados para 1600px, WebP, ~100–300KB).
           </p>
         )}
 

@@ -62,6 +62,12 @@ export default function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       >
         {loading ? "Entrando..." : "Entrar"}
       </button>
+
+      <p className="mt-4 rounded-lg bg-forest-50 p-3 text-xs text-forest-700">
+        Sua sessão expira automaticamente após <strong>8 horas</strong>. Se ao
+        salvar ou enviar aparecer <strong>“Sessão expirada”</strong>, basta
+        fazer o login novamente nesta tela.
+      </p>
     </form>
   );
 }

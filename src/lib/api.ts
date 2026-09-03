@@ -13,6 +13,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
   const data = (await res.json().catch(() => null)) as
     (T & { error?: string }) | null;
+  if (res.status === 401) {
+    const message =
+      data && "error" in data && data.error && data.error !== "Não autorizado"
+        ? data.error
+        : "Sessão expirada. Faça login novamente.";
+    const err = new Error(message) as Error & { status: number };
+    err.status = 401;
+    throw err;
+  }
   if (!res.ok) {
     const message = data?.error ?? `Erro (${res.status})`;
     throw new Error(message);
