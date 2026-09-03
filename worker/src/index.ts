@@ -24,7 +24,6 @@ const CATEGORIES = [
   "eventos",
   "resgates",
   "incendios",
-  "enxames",
   "educacao",
   "outros",
 ];
@@ -32,7 +31,7 @@ const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Access-Control-Max-Age": "86400",
 };
@@ -190,7 +189,7 @@ async function handleUpload(request: Request, env: Env): Promise<Response> {
   const ext = extMatch ? extMatch[1].toLowerCase() : "jpg";
   const url = `/imagens/${sanitizeFilename(parsed.fields.title || "image", ext)}`;
 
-  await env.GALLERY_BUCKET.put(url, parsed.buffer, {
+  await env.GALLERY_BUCKET.put(url.replace(/^\//, ""), parsed.buffer, {
     httpMetadata: { contentType: `image/${ext === "jpg" ? "jpeg" : ext}` },
   });
 
@@ -232,9 +231,52 @@ async function handleDelete(
   }
   manifest.items = manifest.items.filter((i) => i.id !== id);
   await writeManifest(env, manifest);
-  await env.GALLERY_BUCKET.delete(item.url).catch(() => {});
+  await env.GALLERY_BUCKET.delete(item.url.replace(/^\//, "")).catch(() => {});
 
   return json({ ok: true });
+}
+
+async function handleUpdate(
+  request: Request,
+  env: Env,
+  id: string
+): Promise<Response> {
+  const auth = request.headers.get("Authorization");
+  if (
+    !(await verifyToken(
+      env.ADMIN_SECRET,
+      auth?.replace(/^Bearer\s+/i, "") ?? null
+    ))
+  ) {
+    return unauthorized();
+  }
+
+  let body: { title?: string; description?: string; category?: string };
+  try {
+    body = (await request.json()) as typeof body;
+  } catch {
+    return badRequest("Corpo inválido.");
+  }
+
+  const manifest = await readManifest(env);
+  const item = manifest.items.find((i) => i.id === id);
+  if (!item) {
+    return notFound("Item não encontrado.");
+  }
+
+  if (body?.category && CATEGORIES.includes(body.category)) {
+    item.category = body.category as (typeof CATEGORIES)[number];
+  }
+  if (typeof body?.title === "string") {
+    item.title = body.title.trim().slice(0, 120) || "Sem título";
+  }
+  if (typeof body?.description === "string") {
+    item.description = body.description.trim() || undefined;
+  }
+
+  await writeManifest(env, manifest);
+
+  return json({ ok: true, item });
 }
 
 const worker = {
@@ -275,6 +317,9 @@ const worker = {
     const deleteMatch = path.match(/^\/api\/item\/(.+)$/);
     if (deleteMatch && request.method === "DELETE") {
       return handleDelete(request, env, decodeURIComponent(deleteMatch[1]));
+    }
+    if (deleteMatch && request.method === "PATCH") {
+      return handleUpdate(request, env, decodeURIComponent(deleteMatch[1]));
     }
 
     return methodNotAllowed();

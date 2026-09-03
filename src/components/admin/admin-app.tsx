@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { deleteItem, fetchGallery, uploadImage } from "@/lib/api";
+import { deleteItem, fetchGallery, updateItem, uploadImage } from "@/lib/api";
 import {
   CATEGORIES,
   type GalleryCategory,
@@ -27,6 +27,16 @@ export default function AdminApp({
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+
+  const [editing, setEditing] = useState<GalleryItem | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editCategory, setEditCategory] = useState<GalleryCategory>("cursos");
+  const [editSaving, setEditSaving] = useState(false);
+  const [editMessage, setEditMessage] = useState<string | null>(null);
+
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   const token = initialToken || getSessionToken();
 
@@ -80,6 +90,65 @@ export default function AdminApp({
       setError(err instanceof Error ? err.message : "Falha ao excluir.");
     }
   }
+
+  function startEdit(item: GalleryItem) {
+    setEditing(item);
+    setEditTitle(item.title);
+    setEditDescription(item.description ?? "");
+    setEditCategory(item.category);
+    setEditSaving(false);
+    setEditMessage(null);
+  }
+
+  function cancelEdit() {
+    setEditing(null);
+    setEditMessage(null);
+  }
+
+  async function handleEditSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!token || !editing) return;
+    setEditSaving(true);
+    setEditMessage(null);
+    try {
+      await updateItem(token, editing.id, {
+        title: editTitle,
+        description: editDescription,
+        category: editCategory,
+      });
+      await load();
+      setEditSaving(false);
+      setEditing(null);
+    } catch (err) {
+      setEditMessage(err instanceof Error ? err.message : "Falha ao salvar.");
+      setEditSaving(false);
+    }
+  }
+
+  const ITEMS_PER_PAGE = 12;
+
+  const sortedItems = [...items].sort((a, b) =>
+    b.createdAt.localeCompare(a.createdAt)
+  );
+
+  const term = search.trim().toLowerCase();
+  const filteredItems = term
+    ? sortedItems.filter(
+        (i) =>
+          i.title.toLowerCase().includes(term) ||
+          (i.description ?? "").toLowerCase().includes(term)
+      )
+    : sortedItems;
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredItems.length / ITEMS_PER_PAGE)
+  );
+  const safePage = Math.min(page, totalPages);
+  const pagedItems = filteredItems.slice(
+    (safePage - 1) * ITEMS_PER_PAGE,
+    safePage * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
@@ -179,22 +248,58 @@ export default function AdminApp({
 
       <section className="mt-8">
         <h2 className="text-lg font-bold text-forest-900">
-          Imagens ({items.length})
+          Imagens ({filteredItems.length}
+          {term ? ` de ${items.length}` : ""})
         </h2>
+
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <input
+              type="search"
+              placeholder="Buscar por título..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full rounded-lg border border-forest-200 py-2 pl-3 pr-8 text-sm text-forest-900 outline-none focus:border-forest-500"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setPage(1);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-forest-500 hover:text-forest-800"
+                aria-label="Limpar busca"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          {totalPages > 1 && (
+            <p className="text-xs text-forest-600">
+              Página {safePage} de {totalPages}
+            </p>
+          )}
+        </div>
 
         {error && <p className="mt-3 text-sm text-emergency-600">{error}</p>}
         {loading && (
           <p className="mt-3 text-sm text-forest-700">Carregando...</p>
         )}
 
-        {!loading && items.length === 0 && (
+        {!loading && filteredItems.length === 0 && (
           <p className="mt-3 text-sm text-forest-700">
-            Nenhuma imagem cadastrada ainda.
+            {term
+              ? "Nenhuma imagem encontrada."
+              : "Nenhuma imagem cadastrada ainda."}
           </p>
         )}
 
         <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {items.map((item) => (
+          {pagedItems.map((item) => (
             <li
               key={item.id}
               className="overflow-hidden rounded-xl border border-forest-100 bg-white shadow-sm"
@@ -212,18 +317,154 @@ export default function AdminApp({
                 <p className="text-xs text-forest-600">
                   {CATEGORIES[item.category].label}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(item.id)}
-                  className="mt-2 rounded-md border border-emergency-600 px-2 py-1 text-xs font-medium text-emergency-600 transition-colors hover:bg-emergency-600 hover:text-white"
-                >
-                  Excluir
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => startEdit(item)}
+                    className="rounded-md border border-forest-300 px-2 py-1 text-xs font-medium text-forest-800 transition-colors hover:bg-forest-100"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(item.id)}
+                    className="rounded-md border border-emergency-600 px-2 py-1 text-xs font-medium text-emergency-600 transition-colors hover:bg-emergency-600 hover:text-white"
+                  >
+                    Excluir
+                  </button>
+                </div>
               </div>
             </li>
           ))}
         </ul>
+
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={safePage <= 1}
+              className="rounded-lg border border-forest-200 px-3 py-1.5 text-sm font-medium text-forest-800 transition-colors hover:bg-forest-100 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Anterior
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setPage(n)}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  n === safePage
+                    ? "bg-forest-700 text-white"
+                    : "border border-forest-200 text-forest-800 hover:bg-forest-100"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage >= totalPages}
+              className="rounded-lg border border-forest-200 px-3 py-1.5 text-sm font-medium text-forest-800 transition-colors hover:bg-forest-100 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Próximo
+            </button>
+          </div>
+        )}
       </section>
+
+      {editing && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Editar item"
+          onClick={cancelEdit}
+        >
+          <form
+            onSubmit={handleEditSubmit}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-forest-900">Editar item</h2>
+              <button
+                type="button"
+                onClick={cancelEdit}
+                aria-label="Fechar"
+                className="rounded-md px-2 py-1 text-sm font-medium text-forest-800 transition-colors hover:bg-forest-100"
+              >
+                ✕
+              </button>
+            </div>
+
+            <img
+              src={itemImageUrl(editing)}
+              alt={editing.title}
+              className="mt-4 h-40 w-full rounded-lg object-cover"
+            />
+
+            <label className="mt-4 block text-sm font-medium text-forest-900">
+              Título
+              <input
+                type="text"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm font-normal text-forest-900 outline-none focus:border-forest-500"
+              />
+            </label>
+
+            <label className="mt-4 block text-sm font-medium text-forest-900">
+              Categoria
+              <select
+                value={editCategory}
+                onChange={(e) =>
+                  setEditCategory(e.target.value as GalleryCategory)
+                }
+                className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm font-normal text-forest-900 outline-none focus:border-forest-500"
+              >
+                {Object.entries(CATEGORIES).map(([value, c]) => (
+                  <option key={value} value={value}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="mt-4 block text-sm font-medium text-forest-900">
+              Descrição
+              <textarea
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                rows={3}
+                className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm font-normal text-forest-900 outline-none focus:border-forest-500"
+              />
+            </label>
+
+            {editMessage && (
+              <p className="mt-3 text-sm text-emergency-600">{editMessage}</p>
+            )}
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="rounded-lg border border-forest-200 px-4 py-2 text-sm font-medium text-forest-800 transition-colors hover:bg-forest-100"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={editSaving}
+                className="rounded-lg bg-forest-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-forest-600 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {editSaving ? "Salvando..." : "Salvar"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,11 +1,5 @@
 export type GalleryCategory =
-  | "cursos"
-  | "eventos"
-  | "resgates"
-  | "incendios"
-  | "enxames"
-  | "educacao"
-  | "outros";
+  "cursos" | "eventos" | "resgates" | "incendios" | "educacao" | "outros";
 
 export interface GalleryItem {
   id: string;
@@ -27,7 +21,6 @@ export const CATEGORIES: Record<GalleryCategory, { label: string }> = {
   eventos: { label: "Eventos" },
   resgates: { label: "Resgates" },
   incendios: { label: "Incêndios" },
-  enxames: { label: "Enxames" },
   educacao: { label: "Educação" },
   outros: { label: "Outros" },
 };

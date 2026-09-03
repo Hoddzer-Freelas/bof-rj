@@ -1,6 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import PhotoAlbum from "react-photo-album";
+import "react-photo-album/masonry.css";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 import { fetchGallery } from "@/lib/api";
 import {
   CATEGORIES,
@@ -11,12 +15,54 @@ import {
 
 type Filter = "todas" | GalleryCategory;
 
+interface Album {
+  title: string;
+  category: GalleryCategory;
+  items: GalleryItem[];
+  src: string;
+  width: number;
+  height: number;
+}
+
+const PHOTO_RATIO = { width: 4, height: 3 };
+
+function groupByTitle(items: GalleryItem[]): Album[] {
+  const map = new Map<string, GalleryItem[]>();
+  for (const item of items) {
+    const key = item.title || "Sem título";
+    map.set(key, [...(map.get(key) ?? []), item]);
+  }
+  const albums: Album[] = [];
+  for (const [title, list] of map) {
+    const sortedList = [...list].sort((a, b) =>
+      b.createdAt.localeCompare(a.createdAt)
+    );
+    const first = sortedList[0];
+    albums.push({
+      title,
+      category: first.category,
+      items: sortedList,
+      src: itemImageUrl(first),
+      width: PHOTO_RATIO.width,
+      height: PHOTO_RATIO.height,
+    });
+  }
+  albums.sort((a, b) =>
+    b.items[0].createdAt.localeCompare(a.items[0].createdAt)
+  );
+  return albums;
+}
+
 export default function Gallery() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [filter, setFilter] = useState<Filter>("todas");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<GalleryItem | null>(null);
+
+  const [open, setOpen] = useState(false);
+  const [lightboxSlides, setLightboxSlides] = useState<string[]>([]);
+  const [photoIndex, setPhotoIndex] = useState(0);
+
   const load = useCallback(async () => {
     try {
       const manifest = await fetchGallery();
@@ -30,18 +76,21 @@ export default function Gallery() {
       setLoading(false);
     }
   }, []);
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching assíncrono
     void load();
   }, [load]);
 
-  const visible =
+  const visibleItems =
     filter === "todas" ? items : items.filter((i) => i.category === filter);
+
+  const albums = useMemo(() => groupByTitle(visibleItems), [visibleItems]);
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <p className="text-sm font-semibold uppercase tracking-wide text-forest-600">
-        Nossa gente
+        Galeria
       </p>
       <h1 className="mt-2 text-2xl font-bold text-forest-900 sm:text-3xl">
         Nossos trabalhos
@@ -91,81 +140,61 @@ export default function Gallery() {
 
       {loading && <p className="mt-8 text-sm text-forest-700">Carregando...</p>}
 
-      {!loading && !error && visible.length === 0 && (
+      {!loading && !error && visibleItems.length === 0 && (
         <p className="mt-8 text-sm text-forest-700">
           Nenhuma imagem nesta categoria.
         </p>
       )}
 
-      {!loading && visible.length > 0 && (
-        <ul className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                onClick={() => setSelected(item)}
-                className="group block w-full overflow-hidden rounded-xl border border-forest-100 bg-white text-left shadow-sm transition-colors hover:border-forest-300"
-              >
-                <img
-                  src={itemImageUrl(item)}
-                  alt={item.title}
-                  loading="lazy"
-                  className="aspect-[4/3] w-full object-cover"
-                />
-                <div className="p-4">
-                  <p className="truncate text-sm font-semibold text-forest-900">
-                    {item.title}
-                  </p>
-                  <p className="mt-0.5 text-xs text-forest-600">
-                    {CATEGORIES[item.category].label}
-                  </p>
+      {!loading && albums.length > 0 && (
+        <div className="mt-10 space-y-12">
+          {albums.map((album) => (
+            <section key={album.title} aria-label={album.title}>
+              <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+                <h2 className="text-xl font-bold text-forest-900">
+                  {album.title}
+                </h2>
+                <div className="flex items-center gap-3 text-xs text-forest-600">
+                  <span>{CATEGORIES[album.category].label}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>
+                    {album.items.length}{" "}
+                    {album.items.length === 1 ? "foto" : "fotos"}
+                  </span>
                 </div>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {selected && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-          onClick={() => setSelected(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label={selected.title}
-        >
-          <div className="max-h-[90vh] max-w-3xl overflow-auto rounded-xl bg-white p-2 shadow-xl">
-            <img
-              src={itemImageUrl(selected)}
-              alt={selected.title}
-              className="max-h-[70vh] w-full object-contain"
-            />
-            <div className="flex items-center justify-between gap-4 p-3">
-              <div>
-                <p className="font-semibold text-forest-900">
-                  {selected.title}
-                </p>
-                {selected.description && (
-                  <p className="mt-0.5 text-sm text-forest-700">
-                    {selected.description}
-                  </p>
-                )}
-                <p className="mt-1 text-xs text-forest-600">
-                  {CATEGORIES[selected.category].label}
-                </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                aria-label="Fechar"
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-forest-800 transition-colors hover:bg-forest-100"
-              >
-                Fechar ✕
-              </button>
-            </div>
-          </div>
+              <PhotoAlbum
+                layout="masonry"
+                columns={(containerWidth) => {
+                  if (containerWidth < 560) return 2;
+                  if (containerWidth < 900) return 3;
+                  return 4;
+                }}
+                spacing={12}
+                photos={album.items.map((item) => ({
+                  src: itemImageUrl(item),
+                  width: 4,
+                  height: 3,
+                  key: item.id,
+                }))}
+                onClick={({ index: photoIdx }) => {
+                  const slides = album.items.map((i) => itemImageUrl(i));
+                  setLightboxSlides(slides);
+                  setPhotoIndex(photoIdx);
+                  setOpen(true);
+                }}
+              />
+            </section>
+          ))}
         </div>
       )}
+
+      <Lightbox
+        open={open}
+        close={() => setOpen(false)}
+        index={photoIndex}
+        slides={lightboxSlides.map((src) => ({ src }))}
+      />
     </section>
   );
 }

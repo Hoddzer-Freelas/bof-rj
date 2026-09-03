@@ -55,3 +55,15 @@ export async function deleteItem(token: string, id: string): Promise<void> {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
+
+export async function updateItem(
+  token: string,
+  id: string,
+  fields: { title?: string; description?: string; category?: string }
+): Promise<void> {
+  await request<{ ok: boolean }>(`/api/item/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(fields),
+  });
+}
