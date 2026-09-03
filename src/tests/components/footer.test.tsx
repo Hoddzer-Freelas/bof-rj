@@ -6,7 +6,9 @@ describe("Footer", () => {
   it("exibe o nome da brigada", () => {
     render(<Footer />);
     expect(
-      screen.getByText("Brigada de Operações Florestais de Rio de Janeiro")
+      screen.getByText(
+        "1 Brigada de Operações Florestais RJ (Brigada Ivan Moraes)"
+      )
     ).toBeInTheDocument();
   });
 
@@ -14,7 +16,14 @@ describe("Footer", () => {
     render(<Footer />);
     const year = new Date().getFullYear();
     expect(
-      screen.getByText(`© ${year} BOF-RJ. Todos os direitos reservados.`)
+      screen.getByText(
+        `© ${year} 1 Brigada de Operações Florestais RJ (Brigada Ivan Moraes)`
+      )
     ).toBeInTheDocument();
+  });
+
+  it("exibe a localização da brigada", () => {
+    render(<Footer />);
+    expect(screen.getByText("Rio de Janeiro · Brasil")).toBeInTheDocument();
   });
 });

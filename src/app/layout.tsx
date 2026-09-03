@@ -11,11 +11,11 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: "BOF-RJ | Brigada de Operações Florestais do Rio de Janeiro",
+    default: "1 Brigada de Operações Florestais RJ (Brigada Ivan Moraes)",
     template: "%s | BOF-RJ",
   },
   description:
-    "Brigada de Operações Florestais do estado do Rio de Janeiro. Prevenção e combate a incêndios florestais, proteção da Mata Atlântica e resposta a emergências.",
+    "1 Brigada de Operações Florestais RJ (Brigada Ivan Moraes). Prevenção e combate a incêndios florestais, proteção da Mata Atlântica e resposta a emergências no Rio de Janeiro.",
 };
 
 export default function RootLayout({
