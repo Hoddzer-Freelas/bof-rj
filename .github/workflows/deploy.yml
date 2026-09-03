@@ -60,6 +60,7 @@ jobs:
         env:
           NEXT_PUBLIC_GALLERY_WORKER_URL: ${{ secrets.NEXT_PUBLIC_GALLERY_WORKER_URL }}
           NEXT_PUBLIC_R2_PUBLIC_BASE: ${{ secrets.NEXT_PUBLIC_R2_PUBLIC_BASE }}
+          NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
