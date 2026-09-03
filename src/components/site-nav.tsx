@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-type NavItem =
-  | { label: string; href: string; anchor: true }
-  | { label: string; href: string; anchor: false };
+type NavItem = { label: string; href: string; anchor: boolean };
 
 const navItems: NavItem[] = [
-  { label: "Início", href: "#inicio", anchor: true },
-  { label: "Quem somos", href: "#quem-somos", anchor: true },
-  { label: "Programação", href: "#programacao", anchor: true },
+  { label: "Início", href: "/#inicio", anchor: true },
+  { label: "Quem somos", href: "/#quem-somos", anchor: true },
+  { label: "Programação", href: "/#programacao", anchor: true },
   { label: "Nossos trabalhos", href: "/nossos-trabalhos", anchor: false },
 ];
 
@@ -27,6 +26,9 @@ function scrollToHash(hash: string) {
 
 export default function SiteNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isHome = pathname === "/";
 
   useEffect(() => {
     if (open) {
@@ -37,15 +39,27 @@ export default function SiteNav() {
     }
   }, [open]);
 
-  const handleAnchor = (
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const t = window.setTimeout(() => scrollToHash(hash), 80);
+      return () => window.clearTimeout(t);
+    }
+  }, [pathname]);
+
+  function handleNavClick(
     e: React.MouseEvent<HTMLAnchorElement>,
-    hash: string
-  ) => {
-    e.preventDefault();
+    href: string
+  ) {
     setOpen(false);
-    scrollToHash(hash);
-    window.history.replaceState(null, "", hash);
-  };
+    const hashIndex = href.indexOf("#");
+    if (isHome && hashIndex !== -1) {
+      const hash = href.slice(hashIndex);
+      e.preventDefault();
+      window.history.replaceState(null, "", hash);
+      scrollToHash(hash);
+    }
+  }
 
   const panel = open
     ? createPortal(
@@ -91,20 +105,14 @@ export default function SiteNav() {
               {navItems.map((item) => {
                 const className =
                   "rounded-md px-3 py-3 text-base font-medium text-forest-800 transition-colors hover:bg-forest-100 hover:text-forest-900";
-                return item.anchor ? (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    onClick={(e) => handleAnchor(e, item.href)}
-                    className={className}
-                  >
-                    {item.label}
-                  </a>
-                ) : (
+                return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setOpen(false)}
+                    onClick={(e) => {
+                      handleNavClick(e, item.href);
+                      if (!item.anchor) setOpen(false);
+                    }}
                     className={className}
                   >
                     {item.label}
@@ -134,19 +142,13 @@ export default function SiteNav() {
           {navItems.map((item) => {
             const className =
               "rounded-md px-3 py-2 text-forest-800 transition-colors hover:bg-forest-100 hover:text-forest-900";
-            return item.anchor ? (
+            return (
               <li key={item.href}>
-                <a
+                <Link
                   href={item.href}
-                  onClick={(e) => handleAnchor(e, item.href)}
+                  onClick={(e) => handleNavClick(e, item.href)}
                   className={className}
                 >
-                  {item.label}
-                </a>
-              </li>
-            ) : (
-              <li key={item.href}>
-                <Link href={item.href} className={className}>
                   {item.label}
                 </Link>
               </li>
