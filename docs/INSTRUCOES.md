@@ -1,11 +1,10 @@
-# Guia — Como deixar o site da Brigada no ar
+# Guia — Site da Brigada no ar
 
 Este documento explica, tudo o que é
 necessário para o site funcionar e para ter o seu próprio endereço (domínio)
 na internet.
 
-Uma boa notícia: **não é preciso pagar hospedagem**. O site fica hospedado de
-graça. A seguir explicamos cada parte.
+Uma boa notícia: **planos gratuitos de hospedagem do codigo e imagens**. A seguir será explicado cada parte.
 
 ---
 
@@ -19,21 +18,20 @@ O site tem 3 partes principais:
 | **Galeria de fotos** (Nossos trabalhos) | Onde as fotos ficam guardadas e são enviadas pelo painel de administração | **Cloudflare** (armazenamento e sistema gratuito até 10GB) |
 | **Backup dos originais**                | Cópia das fotos originais, para nunca perder                              | **Google Drive** (15 GB grátis)                            |
 
-Abaixo, cada item explicado em detalhes, com o que **você precisa fazer**.
+Abaixo, cada item explicado em detalhes, com o que **você precisa fazer/saber**.
 
 ---
 
 ## 2. Registrar um domínio próprio (ex.: `suaorganizacao.org.br`)
 
-Hoje o site é acessado por um endereço técnico (dado pelo GitHub). Para ter um
-endereço bonito e próprio, do tipo `.org.br`, é preciso **registrar um
+Para ter um endereço amigável e próprio, do tipo `.org.br`, é preciso **registrar um
 domínio** — é como "matricular" o nome do site na internet, igual a dar entrada
 no nome de uma empresa.
 
 - O registro de domínios terminados em `.br` (como `.org.br`) é feito no site
   **Registro.br** (o órgão responsável pelos domínios brasileiros).
 - Para um domínio `.org.br`, normalmente é preciso informar os dados da
-  organização (CNPJ).
+  organização (CNPJ e documentação).
 
 **O que você precisa fazer:**
 
@@ -41,17 +39,17 @@ no nome de uma empresa.
 2. Faça a solicitação de registro do domínio desejado (ex.: `brigada.org.br`).
    O Registro.br informa se o nome já está disponível e a taxa cobrada.
 3. **Importante:** ao finalizar, adicione **o desenvolvedor como "Contato
-   Técnico"** (ou "Técnico") do domínio. Isso dá a ele a permissão para configurar
+   Técnico"** do domínio. Isso dá a ele a permissão para configurar
    o domínio (apontar para o site, renovar tecnicamente etc.) sem depender do
    seu acesso. Você continua sendo o dono; o técnico apenas ajuda na manutenção.
    Código do desenvolvedor no Registro BR: **HEVIA4**
 
 **O que o desenvolvedor faz:** depois do registro, ele configura o domínio para
 "apontar" para o site. Feito isso, as pessoas poderão acessar o site pelo
-endereço próprio em vez do endereço técnico.
+endereço próprio.
 
 > Dica: o registro de domínio é pago (renovado em geral a cada ano). A
-> hospedagem em si continua gratuita.
+> hospedagem em si continua gratuita, se continuar hospedado no Github.
 
 ---
 
@@ -59,10 +57,11 @@ endereço próprio em vez do endereço técnico.
 
 **Você não precisa pagar hospedagem nem contratar servidor.** Isso é feito de
 forma gratuita pelo **GitHub Pages**, que é um serviço que publica o site na
-internet de graça.
+internet de graça para sites estático como o da brigada, que não precisam de banco de dados e processamento no servidor.
 
 - O código do site fica guardado num "repositório" (uma pasta na nuvem) no
   **GitHub**, e o GitHub publica automaticamente a versão mais atualizada.
+- O Github oferece 1GB (1024 MB) gratuito, sendo que um site desse tipo sem as imagens de galeria, costumam ter o tamanho por volta de 2 MB
 
 **O que você precisa fazer:**
 
@@ -171,6 +170,7 @@ desenvolvedor configura as seguintes proteções:
 
 > Importante: quando o armazenamento gratuito for ficando cheio, é só avisar o
 > desenvolvedor — dá para aumentar ou liberar espaço sem grande custo.
+> Mas como mencionado, se seguir um planejamento e se o numero de acessos não aumentar de forma absurda, só precisará do plano gratuito. O desenvolvedor fará testes para passar o número de quantas visitas e cadastros por mês é a média segura para não ter custos e o Analytics ajudará ver o número de acessos ao site.
 
 ---
 
@@ -312,7 +312,7 @@ O fluxo completo para manter a galeria atualizada:
 
 - A **senha** é criada pelo desenvolvedor e entregue para a organização.
 - A organização pode **trocar a senha** a qualquer momento — basta solicitar
-  ao desenvolvedor.
+  ao desenvolvedor ou pedir orietação para que nem o desenvolvedor saiba a senha.
 - A senha deve ser mantida em local seguro e compartilhada apenas com quem
   precisa acessar o painel.
 
@@ -326,7 +326,6 @@ O fluxo completo para manter a galeria atualizada:
 - [ ] **Gmail:** criar o e-mail da organização.
 - [ ] **Google Analytics:** criar a conta (mesmo e-mail da organização) para medir as visitas.
 - [ ] **Google Drive:** criar a pasta dos álbuns e guardar os **originais** das fotos.
-- [ ] Enviar ao desenvolvedor: nome de usuário e e-mails usados nas contas.
 
 > **Observação importante:** os itens acima (GitHub, Cloudflare, Gmail,
 > Analytics e Drive) **podem ser feitos pelo desenvolvedor** caso a organização
@@ -344,7 +343,6 @@ O fluxo completo para manter a galeria atualizada:
 - Configura o domínio para apontar para o site.
 - Configura o armazenamento das fotos e o sistema de envio no Cloudflare.
 - Configura a senha do painel de administração (painel onde você envia as fotos).
-- Mantém o Backup dos originais organizado no Drive, se necessário.
 
 ---
 
