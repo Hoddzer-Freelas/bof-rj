@@ -17,6 +17,29 @@ da **galeria "Nossos trabalhos"** e da **área de upload (`/admin`)**.
 
 ---
 
+## Estado atual da configuração (valores reais)
+
+> Os passos abaixo já foram executados na conta Cloudflare (conta
+> `hemerson-lourenco`). Os valores aqui servem de referência no momento da
+> escrita — se você já tiver feito o setup, apenas confira/atualize esta seção.
+
+| Item               | Valor                                                                   |
+| ------------------ | ----------------------------------------------------------------------- |
+| **Worker**         | `bof-rj-gallery`                                                        |
+| **URL do Worker**  | `https://bof-rj-gallery.hemerson-lourenco.workers.dev`                  |
+| **Bucket R2**      | `bof-rj` (vinculado como `env.GALLERY_BUCKET`)                          |
+| **URL pública R2** | `https://pub-9553ac86f76f48129f60a3b68f3c3f4a.r2.dev`                   |
+| **Secret admin**   | `ADMIN_SECRET` (definido no Worker — senha do `/admin`)                 |
+| **Deploy CLI**     | `npx wrangler r2 bucket dev-url enable bof-rj` → habilitou o r2.dev URL |
+
+Verificações feitas:
+
+- `GET /api/gallery` responde `200` com `{"updatedAt":"...","items":[]}` (lista vazia — correto antes do primeiro upload).
+
+Para recriar este estado do zero, siga os passos 1 a 3 abaixo.
+
+---
+
 ## 1. Criar o bucket R2
 
 1. No painel Cloudflare → **R2 Object Storage** → **Create bucket**.
@@ -73,6 +96,10 @@ https://bof-rj-gallery.<subdominio>.workers.dev
 
 Anote essa URL — vai em `NEXT_PUBLIC_GALLERY_WORKER_URL` no `.env.local`.
 
+> **Como trocar a senha depois**: basta rodar novamente
+> `npx wrangler secret put ADMIN_SECRET` e informar a nova senha. O novo secret
+> vale para o próximo deploy/requisição — não precisa rebuildar o site.
+
 ### 2.4. Testar o Worker localmente (opcional)
 
 ```bash
@@ -121,7 +148,31 @@ Reinicie o `next dev` após alterar o `.env.local`.
 
 ---
 
-## 5. Endpoints da API (resumo)
+## 5. CI — variáveis no build de produção (GitHub Actions)
+
+O site é **estático** e buildado no GitHub Actions. Como os `NEXT_PUBLIC_*`
+precisam existir **durante** `npm run build`, o workflow `.github/workflows/deploy.yml`
+lê esses valores de **secrets do repositório**:
+
+```yaml
+- name: Build with Next.js
+  run: npm run build
+  env:
+    NEXT_PUBLIC_GALLERY_WORKER_URL: ${{ secrets.NEXT_PUBLIC_GALLERY_WORKER_URL }}
+    NEXT_PUBLIC_R2_PUBLIC_BASE: ${{ secrets.NEXT_PUBLIC_R2_PUBLIC_BASE }}
+```
+
+### Pré-requisito: configurar os secrets do GitHub
+
+1. No repositório, vá em **Settings → Secrets and variables → Actions → New repository secret**.
+2. Crie **dois** secrets com os mesmos nomes acima e os valores correspondentes.
+3. Faça push para `main` — o deploy passa a usar esses valores.
+
+> Isso é independente do `.env.local` (que serve só para o desenvolvimento local).
+
+---
+
+## 6. Endpoints da API (resumo)
 
 | Método   | Rota            | Auth           | Descrição                           |
 | -------- | --------------- | -------------- | ----------------------------------- |
@@ -134,7 +185,7 @@ CORS: o Worker responde `OPTIONS` e envia `Access-Control-Allow-*` em todas as r
 
 ---
 
-## 6. Solução de problemas
+## 7. Solução de problemas
 
 - **Login dá "Senha incorreta"**: confirme que o `ADMIN_SECRET` foi definido no
   Worker (`npx wrangler secret put ADMIN_SECRET`) e que digitou exatamente a
