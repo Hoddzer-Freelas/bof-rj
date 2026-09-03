@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 const navItems = [
-  { label: "Início", href: "/" },
-  { label: "Quem somos", href: "/quem-somos" },
-  { label: "Programação", href: "/programacao" },
-  { label: "Nossa gente", href: "/nossa-gente" },
+  { label: "Início", href: "#inicio" },
+  { label: "Quem somos", href: "#quem-somos" },
+  { label: "Programação", href: "#programacao" },
+  { label: "Nossa gente", href: "#nossa-gente" },
 ];
 
 const whatsappUrl =
