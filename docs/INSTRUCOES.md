@@ -1,11 +1,11 @@
-# Guia para o Cliente — Como deixar o site da Brigada no ar
+# Guia — Como deixar o site da Brigada no ar
 
-Este documento explica, de forma simples e sem "tecniquês", tudo o que é
+Este documento explica, tudo o que é
 necessário para o site funcionar e para ter o seu próprio endereço (domínio)
-na internet. Não precisa entender de computação: basta seguir o passo a passo.
+na internet.
 
 Uma boa notícia: **não é preciso pagar hospedagem**. O site fica hospedado de
-graça. A seguir explicamos cada parte e o que **você** precisa fazer.
+graça. A seguir explicamos cada parte.
 
 ---
 
@@ -13,11 +13,11 @@ graça. A seguir explicamos cada parte e o que **você** precisa fazer.
 
 O site tem 3 partes principais:
 
-| Parte                                   | O que é                                                                   | Quem cuida                                        |
-| --------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| **Página do site**                      | O "visual" que as pessoas veem (home, galeria, formulários)               | Hospedado de graça no **GitHub Pages**            |
-| **Galeria de fotos** (Nossos trabalhos) | Onde as fotos ficam guardadas e são enviadas pelo painel de administração | **Cloudflare** (armazenamento e sistema gratuito) |
-| **Backup dos originais**                | Cópia das fotos originais, para nunca perder                              | **Google Drive** (15 GB grátis)                   |
+| Parte                                   | O que é                                                                   | Quem cuida                                                 |
+| --------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Página do site**                      | O "visual" que as pessoas veem (home, galeria, formulários)               | Hospedado de graça no **GitHub Pages** (1GB Grátis)        |
+| **Galeria de fotos** (Nossos trabalhos) | Onde as fotos ficam guardadas e são enviadas pelo painel de administração | **Cloudflare** (armazenamento e sistema gratuito até 10GB) |
+| **Backup dos originais**                | Cópia das fotos originais, para nunca perder                              | **Google Drive** (15 GB grátis)                            |
 
 Abaixo, cada item explicado em detalhes, com o que **você precisa fazer**.
 
@@ -33,7 +33,7 @@ no nome de uma empresa.
 - O registro de domínios terminados em `.br` (como `.org.br`) é feito no site
   **Registro.br** (o órgão responsável pelos domínios brasileiros).
 - Para um domínio `.org.br`, normalmente é preciso informar os dados da
-  organização (CNPJ, se houver).
+  organização (CNPJ).
 
 **O que você precisa fazer:**
 
@@ -44,6 +44,7 @@ no nome de uma empresa.
    Técnico"** (ou "Técnico") do domínio. Isso dá a ele a permissão para configurar
    o domínio (apontar para o site, renovar tecnicamente etc.) sem depender do
    seu acesso. Você continua sendo o dono; o técnico apenas ajuda na manutenção.
+   Código do desenvolvedor no Registro BR: HEVIA4
 
 **O que o desenvolvedor faz:** depois do registro, ele configura o domínio para
 "apontar" para o site. Feito isso, as pessoas poderão acessar o site pelo
@@ -88,7 +89,7 @@ O site usa o **Cloudflare** para duas coisas:
   administração (chamado de _Workers_).
 
 Tudo isso tem um **plano gratuito** com limite generoso (10 GB de
-armazenamento), que atende bem a uma galeria como a de vocês. Não é preciso
+armazenamento), que atende bem a uma galeria. Não é preciso
 pagar por enquanto.
 
 **O que você precisa fazer:**
@@ -188,6 +189,16 @@ do Analytics, sempre entrando com o mesmo e-mail da organização.
 - [ ] **Google Analytics:** criar a conta (mesmo e-mail da organização) para medir as visitas.
 - [ ] **Google Drive:** criar a pasta dos álbuns e guardar os **originais** das fotos.
 - [ ] Enviar ao desenvolvedor: nome de usuário e e-mails usados nas contas.
+
+> **Observação importante:** os itens acima (GitHub, Cloudflare, Gmail,
+> Analytics e Drive) **podem ser feitos pelo desenvolvedor** caso a organização
+> ainda **não tenha um e-mail (Gmail) criado** — basta informar ao desenvolvedor
+> qual nome de e-mail vocês gostariam de usar, e ele cuida do restante. Se
+> **já existir** um Gmail da organização, vocês apenas informam o endereço ao
+> desenvolvedor. Depois de tudo configurado, o desenvolvedor **entrega os
+> acessos** de cada conta para a organização e orienta a **troca das senhas**
+> pelos próprios responsáveis, garantindo que somente vocês tenham controle das
+> contas.
 
 ## 8. O que o DESENVOLVEDOR faz (para seu conhecimento)
 
