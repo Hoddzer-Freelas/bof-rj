@@ -6,7 +6,9 @@ describe("Footer", () => {
   it("exibe o nome da brigada", () => {
     render(<Footer />);
     expect(
-      screen.getByText("Brigada de Operações Florestais de Rio de Janeiro")
+      screen.getByText(
+        "1 Brigada de Operações Florestais RJ (Brigada Ivan Moraes)"
+      )
     ).toBeInTheDocument();
   });
 

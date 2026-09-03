@@ -1,37 +1,29 @@
+import Image from "next/image";
 import Link from "next/link";
-
-const navItems = [
-  { label: "Início", href: "/" },
-  { label: "Documentação", href: "/docs" },
-];
+import SiteNav from "./site-nav";
 
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-forest-100 bg-forest-50/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-forest-700 text-sm font-bold text-white">
-            BOF
-          </span>
-          <span className="hidden flex-col leading-tight sm:flex">
-            <span className="text-sm font-bold text-forest-900">
-              Brigada de Operações Florestais
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link href="/" className="flex min-w-0 items-center gap-3">
+          <Image
+            src="/bof-rj/assets/global/logo.jpg"
+            alt="Logotipo da 1 Brigada de Operações Florestais RJ (Brigada Ivan Moraes)"
+            width={48}
+            height={48}
+            className="h-12 w-12 flex-shrink-0 rounded-lg object-cover"
+            priority
+          />
+          <span className="hidden min-w-0 flex-col leading-tight md:flex">
+            <span className="truncate text-sm font-bold text-forest-900">
+              1 Brigada de Operações Florestais RJ (Brigada Ivan Moraes)
             </span>
             <span className="text-xs text-forest-600">Rio de Janeiro</span>
           </span>
         </Link>
 
-        <nav className="flex items-center gap-1 text-sm font-medium">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-md px-3 py-2 text-forest-800 transition-colors hover:bg-forest-100 hover:text-forest-900"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <SiteNav />
       </div>
     </header>
   );

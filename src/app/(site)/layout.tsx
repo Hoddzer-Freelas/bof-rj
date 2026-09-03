@@ -1,4 +1,4 @@
-export default function SystemLayout({
+export default function SiteLayout({
   children,
 }: {
   children: React.ReactNode;
