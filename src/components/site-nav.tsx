@@ -1,21 +1,34 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-const navItems = [
-  { label: "Início", href: "#inicio" },
-  { label: "Quem somos", href: "#quem-somos" },
-  { label: "Programação", href: "#programacao" },
-  { label: "Nossa gente", href: "#nossa-gente" },
+type NavItem = { label: string; href: string; anchor: boolean };
+
+const navItems: NavItem[] = [
+  { label: "Início", href: "/#inicio", anchor: true },
+  { label: "Quem somos", href: "/#quem-somos", anchor: true },
+  { label: "Programação", href: "/#programacao", anchor: true },
+  { label: "Nossos trabalhos", href: "/nossos-trabalhos", anchor: false },
 ];
 
 const whatsappUrl =
   "https://api.whatsapp.com/send/?phone=5521966956140&text=Ol%C3%A1%21+Vi+o+site+da+1+Brigada+de+Opera%C3%A7%C3%B5es+Florestais+RJ+%28Brigada+Ivan+Moraes%29+e+quero+saber+mais.&type=phone_number&app_absent=0";
 
+function scrollToHash(hash: string) {
+  const el = document.querySelector(hash);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 export default function SiteNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isHome = pathname === "/";
 
   useEffect(() => {
     if (open) {
@@ -25,6 +38,28 @@ export default function SiteNav() {
       };
     }
   }, [open]);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const t = window.setTimeout(() => scrollToHash(hash), 80);
+      return () => window.clearTimeout(t);
+    }
+  }, [pathname]);
+
+  function handleNavClick(
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) {
+    setOpen(false);
+    const hashIndex = href.indexOf("#");
+    if (isHome && hashIndex !== -1) {
+      const hash = href.slice(hashIndex);
+      e.preventDefault();
+      window.history.replaceState(null, "", hash);
+      scrollToHash(hash);
+    }
+  }
 
   const panel = open
     ? createPortal(
@@ -67,16 +102,23 @@ export default function SiteNav() {
             </div>
 
             <nav className="flex flex-col gap-1 p-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-md px-3 py-3 text-base font-medium text-forest-800 transition-colors hover:bg-forest-100 hover:text-forest-900"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const className =
+                  "rounded-md px-3 py-3 text-base font-medium text-forest-800 transition-colors hover:bg-forest-100 hover:text-forest-900";
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={(e) => {
+                      handleNavClick(e, item.href);
+                      if (!item.anchor) setOpen(false);
+                    }}
+                    className={className}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
               <a
                 href={whatsappUrl}
                 target="_blank"
@@ -97,16 +139,21 @@ export default function SiteNav() {
     <>
       <nav className="flex items-center gap-4 text-sm font-medium">
         <ul className="hidden items-center gap-1 lg:flex">
-          {navItems.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className="rounded-md px-3 py-2 text-forest-800 transition-colors hover:bg-forest-100 hover:text-forest-900"
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {navItems.map((item) => {
+            const className =
+              "rounded-md px-3 py-2 text-forest-800 transition-colors hover:bg-forest-100 hover:text-forest-900";
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className={className}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <a
