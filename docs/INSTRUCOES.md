@@ -44,7 +44,7 @@ no nome de uma empresa.
    Técnico"** (ou "Técnico") do domínio. Isso dá a ele a permissão para configurar
    o domínio (apontar para o site, renovar tecnicamente etc.) sem depender do
    seu acesso. Você continua sendo o dono; o técnico apenas ajuda na manutenção.
-   Código do desenvolvedor no Registro BR: HEVIA4
+   Código do desenvolvedor no Registro BR: **HEVIA4**
 
 **O que o desenvolvedor faz:** depois do registro, ele configura o domínio para
 "apontar" para o site. Feito isso, as pessoas poderão acessar o site pelo
@@ -73,6 +73,17 @@ internet de graça.
 3. Quando a conta estiver pronta, informe ao desenvolvedor o **nome de
    usuário** e o **e-mail** usados, para que ele possa te adicionar ao projeto
    do site (assim você também consegue acompanhar tudo).
+
+**Ponto importante: o código do site precisa ser público.**
+
+Para usar o GitHub Pages de forma gratuita, o "repositório" (a pasta do
+código) precisa ficar **visível/publico** na internet. Isso é normal e
+amplamente usado na criação de sites. Como o **código do site não contém
+informações confidenciais** (senhas, dados dos visitantes, planilhas, etc.),
+deixá-lo público **não traz problema algum** — o que precisa ficar protegido e
+secreto (como a senha de acesso ao painel de fotos) fica guardado com o
+desenvolvedor, em local seguro e separado do código, de onde **não** fica
+visível para outras pessoas.
 
 **O que o desenvolvedor faz:** publica o site, configura a publicação
 automática e cuida das atualizações. Não é preciso instalar nada no seu
@@ -215,7 +226,7 @@ do Analytics, sempre entrando com o mesmo e-mail da organização.
 **Preciso pagar alguma coisa todo mês?**
 R: Não. A hospedagem, o armazenamento das fotos e o backup são gratuitos. O
 único gasto recorrente é o **domínio** (item 2), que costuma ser um valor
-anual baixo.
+anual.
 
 **Preciso instalar algo no meu computador?**
 R: Não. Tudo é feito pela internet (no navegador), a partir das contas criadas
@@ -227,5 +238,4 @@ administração do site, sem precisar do desenvolvedor.
 
 **Quanto tempo demora para o site ficar no novo endereço?**
 R: Depois de registrar o domínio e o desenvolvedor configurá-lo, a mudança
-costuma valer em algumas horas (podendo levar até 24h para todos os
-computadores do mundo "enxergarem" o novo endereço).
+costuma valer em algumas horas (podendo levar até 24h).
