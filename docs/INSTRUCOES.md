@@ -103,6 +103,38 @@ Tudo isso tem um **plano gratuito** com limite generoso (10 GB de
 armazenamento), que atende bem a uma galeria. Não é preciso
 pagar por enquanto.
 
+**Sobre requisições (o quanto o sistema "trabalha" ao ser usado):**
+
+O plano gratuito do Cloudflare permite **100.000 requisições por dia** (cada
+vez que o sistema recebe um pedido — como carregar a galeria, entrar no painel
+ou enviar uma foto — conta como uma requisição). Para o tamanho deste site,
+esse limite é muito folgado.
+
+Uma observação importante sobre o painel do Cloudflare (no menu "Workers &
+Pages"): o número que aparece ali é o **total acumulado de TUDO** que o sistema
+fez desde que foi publicado — e lá a própria sintonia é feita, não só uploads.
+Por exemplo, ao enviar fotos você usa as operações, mas **entrar no painel,
+carregar a lista de fotos e atualizar a galeria após o envio** também somam.
+Por isso, mesmo enviando poucas fotos, é normal ver um número maior (por
+exemplo, **204** em um dia de testes) — isso inclui login + uploads +
+atualizações da lista ao longo do dia, e **de longe não chega perto** do limite
+de 100 mil por dia.
+
+Em termos práticos:
+
+- **Enviar 30 fotos** pelo painel usa **30 requisições de upload** (1 por
+  foto). O upload acontece de uma vez só e pronto.
+- **Cada pessoa que visita a galeria** gasta **1 requisição** para carregar a
+  lista de fotos. Mesmo se o site recebesse **1.000 visitas num dia**, seriam
+  apenas **1.000 requisições** — bem abaixo do limite.
+- As **imagens propriamente ditas** são entregues diretamente pelo
+  armazenamento de fotos (chamado _R2_), sem contar como requisição do sistema
+  de upload. Como as fotos enviadas já são **otimizadas (comprimidas)** antes
+  de subir, elas ficam pequenas e usam pouquíssimo espaço e tráfego.
+
+Ou seja: **30 fotos** e até centenas de visitas por dia cabem tranquilamente no
+**plano gratuito**, sem pagar nada.
+
 **O que você precisa fazer:**
 
 1. Criar uma conta gratuita no Cloudflare: acesse `dash.cloudflare.com` e
