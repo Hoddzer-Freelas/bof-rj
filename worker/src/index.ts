@@ -28,6 +28,36 @@ const CATEGORIES = [
   "outros",
 ];
 const MAX_SIZE_BYTES = 10 * 1024 * 1024;
+const RATE_LIMIT_AUTH_MAX = 5;
+const RATE_LIMIT_AUTH_WINDOW_MS = 60_000;
+const RATE_LIMIT_UPLOAD_MAX = 20;
+const RATE_LIMIT_UPLOAD_WINDOW_MS = 60_000;
+
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(
+  key: string,
+  maxRequests: number,
+  windowMs: number
+): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+  if (!entry || now > entry.resetTime) {
+    rateLimitMap.set(key, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  if (entry.count >= maxRequests) return false;
+  entry.count++;
+  return true;
+}
+
+function clientIp(request: Request): string {
+  return (
+    request.headers.get("CF-Connecting-IP") ??
+    request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ??
+    "unknown"
+  );
+}
 
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -153,6 +183,17 @@ async function parseUpload(request: Request): Promise<{
 }
 
 async function handleUpload(request: Request, env: Env): Promise<Response> {
+  const ip = clientIp(request);
+  if (
+    !checkRateLimit(
+      `upload:${ip}`,
+      RATE_LIMIT_UPLOAD_MAX,
+      RATE_LIMIT_UPLOAD_WINDOW_MS
+    )
+  ) {
+    return json({ error: "Muitos uploads aguarde 1 minuto." }, 429);
+  }
+
   const auth = request.headers.get("Authorization");
   if (
     !(await verifyToken(
@@ -295,6 +336,16 @@ const worker = {
     }
 
     if (path === "/api/auth" && request.method === "POST") {
+      const ip = clientIp(request);
+      if (
+        !checkRateLimit(
+          `auth:${ip}`,
+          RATE_LIMIT_AUTH_MAX,
+          RATE_LIMIT_AUTH_WINDOW_MS
+        )
+      ) {
+        return json({ error: "Muitas tentativas. Aguarde 1 minuto." }, 429);
+      }
       try {
         const body = (await request.json()) as { password?: string };
         if (typeof body.password !== "string") {

@@ -145,7 +145,29 @@ Ou seja: **30 fotos** e até centenas de visitas por dia cabem tranquilamente no
 
 **O que o desenvolvedor faz:** configura o armazenamento das fotos e o sistema
 de envio dentro da sua conta, e seta a senha de acesso ao painel de
-administração do site (a área onde você fará upload das fotos).
+administração do site (a área onde você fará upload das fotos). Também configura
+as **proteções de uso** (detalhadas abaixo), para garantir que o site não
+ultrapasse os limites do plano gratuito.
+
+**Proteções que o desenvolvedor configura (no painel do Cloudflare):**
+
+Para garantir que o site não ultrapasse os limites do plano gratuito, o
+desenvolvedor configura as seguintes proteções:
+
+- **Rate limiting** (limite de requisições): configura regras no painel do
+  Cloudflare para limitar o número de pedidos por minuto, evitando abuso. O
+  Worker também já possui uma proteção interna que limita tentativas de login
+  (5 por minuto) e uploads (20 por minuto) por endereço.
+- **Spending limit** (limite de gasto): configura um limite de gasto no
+  armazenamento R2, para que o Cloudflare bloqueie novos uploads antes de
+  ultrapassar o plano gratuito.
+- **Alertas por e-mail**: configura notificações no painel do Cloudflare para
+  avisar quando o site atingir 80% do limite de requisições ou armazenamento,
+  permitindo que o desenvolvedor tome providências antes de qualquer bloqueio.
+
+> Você não precisa se preocupar com essas configurações — o desenvolvedor
+> cuida de tudo. Mas é bom saber que existem essas proteções, para ficar
+> tranquilo de que não haverá surpresas.
 
 > Importante: quando o armazenamento gratuito for ficando cheio, é só avisar o
 > desenvolvedor — dá para aumentar ou liberar espaço sem grande custo.

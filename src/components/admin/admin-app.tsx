@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { deleteItem, fetchGallery, updateItem, uploadImage } from "@/lib/api";
 import {
@@ -342,9 +343,11 @@ export default function AdminApp({
               key={item.id}
               className="overflow-hidden rounded-xl border border-forest-100 bg-white shadow-sm"
             >
-              <img
+              <Image
                 src={itemImageUrl(item)}
                 alt={item.title}
+                width={400}
+                height={160}
                 className="h-32 w-full object-cover"
                 loading="lazy"
               />
@@ -437,9 +440,11 @@ export default function AdminApp({
               </button>
             </div>
 
-            <img
+            <Image
               src={itemImageUrl(editing)}
               alt={editing.title}
+              width={400}
+              height={160}
               className="mt-4 h-40 w-full rounded-lg object-cover"
             />
 

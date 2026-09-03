@@ -160,12 +160,13 @@ lê esses valores de **secrets do repositório**:
   env:
     NEXT_PUBLIC_GALLERY_WORKER_URL: ${{ secrets.NEXT_PUBLIC_GALLERY_WORKER_URL }}
     NEXT_PUBLIC_R2_PUBLIC_BASE: ${{ secrets.NEXT_PUBLIC_R2_PUBLIC_BASE }}
+    NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
 ```
 
 ### Pré-requisito: configurar os secrets do GitHub
 
 1. No repositório, vá em **Settings → Secrets and variables → Actions → New repository secret**.
-2. Crie **dois** secrets com os mesmos nomes acima e os valores correspondentes.
+2. Crie **três** secrets com os mesmos nomes acima e os valores correspondentes.
 3. Faça push para `main` — o deploy passa a usar esses valores.
 
 > Isso é independente do `.env.local` (que serve só para o desenvolvimento local).
@@ -179,6 +180,7 @@ lê esses valores de **secrets do repositório**:
 | `GET`    | `/api/gallery`  | —              | Retorna o manifest (lista de itens) |
 | `POST`   | `/api/auth`     | —              | Valida senha → retorna token        |
 | `POST`   | `/api/upload`   | `Bearer token` | Envia imagem + metadados            |
+| `PATCH`  | `/api/item/:id` | `Bearer token` | Atualiza título/descrição/categoria |
 | `DELETE` | `/api/item/:id` | `Bearer token` | Remove item                         |
 
 CORS: o Worker responde `OPTIONS` e envia `Access-Control-Allow-*` em todas as rotas.
@@ -197,3 +199,71 @@ CORS: o Worker responde `OPTIONS` e envia `Access-Control-Allow-*` em todas as r
 - **Imagem não carrega**: confira `NEXT_PUBLIC_R2_PUBLIC_BASE` — as URLs das
   imagens no manifest são relativas (`/imagens/...`) e o prefixo é adicionado a
   partir dessa base.
+
+---
+
+## 8. Proteções contra abuso e ultrapassagem de limites
+
+Para garantir que o site não ultrapasse os limites do plano gratuito, foram
+configuradas **duas camadas de proteção**: uma no código do Worker e outra no
+painel do Cloudflare.
+
+### 8.1. Proteção no código do Worker (rate limiting interno)
+
+O Worker possui um rate limiter interno que limita requisições por endereço IP:
+
+| Rota               | Limite       | Janela | Ação ao exceder                      |
+| ------------------ | ------------ | ------ | ------------------------------------ |
+| `POST /api/auth`   | 5 tentativas | 1 min  | Retorna HTTP 429 "Muitas tentativas" |
+| `POST /api/upload` | 20 uploads   | 1 min  | Retorna HTTP 429 "Muitos uploads"    |
+
+> **Nota técnica**: o rate limiter é baseado em memória do Worker (Map em
+> JavaScript). Como o Cloudflare pode executar múltiplas instâncias do Worker
+> simultaneamente, a contagem não é 100% precisa entre instâncias. Para uma
+> proteção mais robusta, use as regras de rate limiting do painel (seção 8.2).
+
+### 8.2. Proteção no painel do Cloudflare (dashboard)
+
+Estas configurações são feitas pelo desenvolvedor no painel do Cloudflare
+(`dash.cloudflare.com`):
+
+#### Rate limiting (limite de requisições)
+
+1. No painel → **Workers & Pages** → selecione `bof-rj-gallery` → **Settings** → **Triggers** → **Rate Limiting**.
+2. Crie uma regra: "Se uma origem (IP) fizer mais de 100 requisições/minuto, bloquear por 5 minutos".
+3. Salve a regra.
+
+> Isso evita abuso (bots, ataques, scripts). O limite real do plano free é
+> 100.000 req/dia, mas a regra de rate limiting protege contra picos
+> 瞬aneos.
+
+#### Spending limit (limite de gasto no R2)
+
+1. No painel → **R2 Object Storage** → selecione o bucket `bof-rj` → **Settings** → **Metrics**.
+2. Em **Usage Limits**, configure um **spending limit** (ex.: US$ 0,00 para
+   garantir que não gaste nada além do free tier).
+3. O Cloudflare bloqueará novos uploads antes de ultrapassar o limite.
+
+#### Alertas por e-mail
+
+1. No painel → **Notifications** (sino no canto superior direito) → **Add notification**.
+2. Crie um alerta: "Quando o Worker atingir 80% do limite de requisições, enviar e-mail".
+3. Crie outro alerta: "Quando o R2 atingir 80% do armazenamento, enviar e-mail".
+4. Use o e-mail da organização para receber as notificações.
+
+> Com essas proteções, o desenvolvedor é avisado antes de qualquer bloqueio
+> e pode tomar providências (liberar espaço, ajustar limites, etc.).
+
+---
+
+## 9. Variáveis de ambiente (resumo)
+
+| Variável                         | Onde é usada            | Onde é definida                                      |
+| -------------------------------- | ----------------------- | ---------------------------------------------------- |
+| `NEXT_PUBLIC_GALLERY_WORKER_URL` | Front-end (site)        | `.env.local` + GitHub Secrets                        |
+| `NEXT_PUBLIC_R2_PUBLIC_BASE`     | Front-end (site)        | `.env.local` + GitHub Secrets                        |
+| `NEXT_PUBLIC_GA_ID`              | Front-end (site)        | `.env.local` + GitHub Secrets (Google Analytics)     |
+| `ADMIN_SECRET`                   | Worker (senha do admin) | `wrangler secret put ADMIN_SECRET` (nunca no código) |
+
+> Variáveis `NEXT_PUBLIC_*` ficam expostas no bundle JS (são URLs públicas).
+> `ADMIN_SECRET` é secreta e nunca aparece no código fonte.
