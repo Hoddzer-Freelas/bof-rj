@@ -223,7 +223,80 @@ do Analytics, sempre entrando com o mesmo e-mail da organização.
 
 ---
 
-## 7. Resumo do que VOCÊ precisa fazer (checklist)
+## 7. Painel de administração: como enviar e gerenciar as fotos
+
+O site tem um **painel de administração** — uma área segura, com senha, onde
+você envia, edita e exclui fotos da galeria ("Nossos trabalhos").
+
+### Como acessar
+
+1. Acesse o endereço do site + `/admin/login` (ex.: `seusite.org.br/admin/login`).
+2. Insira a **senha de acesso** fornecida pelo desenvolvedor.
+3. Pronto — você estará dentro do painel.
+
+### Como enviar fotos
+
+1. Preencha o **título** do álbum (ex.: "Curso de combate a incêndio 2026").
+2. (Opcional) Adicione uma **descrição**.
+3. Escolha a **categoria** (veja lista abaixo).
+4. Clique em **"Escolher arquivos"** e selecione as fotos do computador
+   (pode selecionar várias de uma vez — todas as fotos de uma vez só).
+5. Clique em **"Enviar imagens"**.
+6. As fotos são **otimizadas automaticamente** (redimensionadas e comprimidas)
+   antes de subir — você não precisa se preocupar com isso.
+7. A galeria do site **atualiza sozinha**, sem precisar fazer mais nada.
+
+### Categorias disponíveis
+
+| Categoria | Quando usar                                                       |
+| --------- | ----------------------------------------------------------------- |
+| Cursos    | Treinamentos, capacitações, oficinas ministradas pela brigada     |
+| Eventos   | Eventos públicos, cerimônias, inaugurações, trabalhos voluntários |
+| Resgates  | Ações de resgate de animais, pessoas ou situações de risco        |
+| Incêndios | Combate a incêndios florestais e ações de prevenção               |
+| Educação  | Palestras, ações em escolas, trabalhos educativos                 |
+| Outras    | Qualquer coisa que não se encaixe nas categorias acima            |
+
+> **Quer mudar ou adicionar categorias?** Basta solicitar ao desenvolvedor.
+> É rápido e gratuito. Por exemplo, se vocês criarem um novo tipo de atividade
+> (como "Animais resgatados"), é só pedir para ele incluir.
+
+### Editar e excluir fotos
+
+No painel, ao lado de cada foto, há opções para:
+
+- **Editar:** alterar o título, a descrição ou a categoria de uma foto.
+- **Excluir:** remover uma foto que não deve mais aparecer no site.
+
+> **Importante:** o site atualiza instantaneamente. Ao editar ou excluir uma
+> foto, a mudança já aparece na galeria em segundos.
+
+### Fluxo de trabalho recomendado
+
+O fluxo completo para manter a galeria atualizada:
+
+1. **Tire as fotos** (celular ou câmera).
+2. **Guarde os originais** no Google Drive (por álbum), conforme explicado no
+   item 5.
+3. **Acesse o painel de administração** (`/admin/login`) e envie as fotos com
+   título e categoria.
+4. **O site atualiza automaticamente** — sem precisar pedir ao desenvolvedor.
+
+> Dica: se vocês tiverem muitas fotos de um mesmo evento, pode enviar tudo de
+> uma vez, com o mesmo título. O site agrupa automaticamente as fotos que têm
+> o mesmo título em um "álbum" visual.
+
+### Senha do painel
+
+- A **senha** é criada pelo desenvolvedor e entregue para a organização.
+- A organização pode **trocar a senha** a qualquer momento — basta solicitar
+  ao desenvolvedor.
+- A senha deve ser mantida em local seguro e compartilhada apenas com quem
+  precisa acessar o painel.
+
+---
+
+## 8. Resumo do que VOCÊ precisa fazer (checklist)
 
 - [ ] **Registro.br:** registrar o domínio `.org.br` e me colocar como **contato técnico**.
 - [ ] **GitHub:** criar conta gratuita e informar usuário/e-mail ao desenvolvedor.
@@ -243,7 +316,7 @@ do Analytics, sempre entrando com o mesmo e-mail da organização.
 > pelos próprios responsáveis, garantindo que somente vocês tenham controle das
 > contas.
 
-## 8. O que o DESENVOLVEDOR faz (para seu conhecimento)
+## 9. O que o DESENVOLVEDOR faz (para seu conhecimento)
 
 - Publica e atualiza o site no GitHub Pages.
 - Configura o domínio para apontar para o site.
